@@ -1,0 +1,19 @@
+---
+
+- name: Copy snmp test script.
+  copy:
+    remote_src: false
+    src: snmp-test.py
+    dest: /opt/snmp-test.py
+    mode: 0644
+
+- name: Execute test script.
+  shell: /opt/snmp-test.py
+  args:
+    warn: no
+    executable: /usr/bin/python
+  register: result
+
+- name: Check snmp status.
+  debug: msg="snmp ok."
+  when: (result.stdout.find("ok") != -1)

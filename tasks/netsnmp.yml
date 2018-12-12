@@ -1,0 +1,14 @@
+---
+
+- name: Unarchive netsnmp-py.
+  unarchive:
+    remote_src: false
+    src: "{{ netsnmp_package }}"
+    dest: /usr/local/src/
+    creates: "/usr/local/src/{{ netsnmp_package | regex_replace('\\.zip', '')| regex_replace('\\.tar.gz', '') }}"
+
+- name: Install netsnmp-py.
+  shell: python setup.py install
+  args:
+    chdir: /usr/local/src/netsnmp-py3-0.4
+    creates: /usr/lib64/python2.7/site-packages/netsnmp_py-0.4-py2.7-linux-x86_64.egg/netsnmp/__init__.py

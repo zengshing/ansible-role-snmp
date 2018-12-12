@@ -1,0 +1,31 @@
+---
+
+galaxy_info:
+  author: "Simon Bärlocher"
+  company: "sbaerlo.ch/er"
+  description: "Ansible role for installing and Configuration SNMP v3 on installs RHEL/CentOS or Debian/Ubuntu and SNMP v2 on Windows."
+  license: MIT
+  min_ansible_version: 2.7
+  platforms:
+    - name: EL
+      versions:
+        - 7
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Archlinux
+      versions:
+        - all
+    - name: Windows
+      versions:
+        - all
+
+  galaxy_tags:
+    - system
+    - networking
+    - monitoring
+
+dependencies: []

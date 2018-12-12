@@ -1,0 +1,97 @@
+---
+# tasks file for sbaerlocher.snmp
+
+- name: 'linux : install snmp'
+  become: true
+  package:
+    name: '{{ snmp_package_name }}'
+  tags:
+    - packages
+
+- name: 'linux : create snmp extension directory'
+  become: true
+  file:
+    path: '{{ snmp_extension_scripts }}'
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+    seuser: system_u
+    serole: object_r
+    setype: lib_t
+    selevel: s0
+  tags:
+    - configuration
+
+- name: 'linux : install snmp extension distro'
+  become: true
+  get_url:
+    url: 'https://raw.githubusercontent.com/librenms/librenms-agent/master/snmp/distro'
+    dest: '{{ snmp_extension_scripts + "/" }}'
+    owner: root
+    group: root
+    mode: 0755
+    seuser: system_u
+    serole: object_r
+    setype: lib_t
+    selevel: s0
+  tags:
+    - configuration
+
+- name: 'linux : install snmp extension proxmox'
+  become: true
+  get_url:
+    url: 'https://raw.githubusercontent.com/librenms/librenms-agent/master/agent-local/proxmox'
+    dest: '{{ snmp_extension_scripts + "/" }}'
+  when: '"pve" in ansible_kernel'
+
+- name: 'linux : check create snmp config'
+  become: true
+  template:
+    src: 'snmpd.conf.j2'
+    dest: '/etc/snmp/{{ snmp_config_name }}.conf'
+    owner: root
+    group: root
+    mode: 0600
+    seuser: system_u
+    serole: object_r
+    setype: etc_t
+    selevel: s0
+  register: check_snmp
+  check_mode: true
+  tags:
+    - configuration
+
+- block:
+
+    - name: 'linux : stopped snmp'
+      become: true
+      service:
+        name: '{{ snmp_service_name }}'
+        state: stopped
+
+    - name: 'linux : create snmp config'
+      become: true
+      template:
+        src: 'snmpd.conf.j2'
+        dest: '/etc/snmp/{{ snmp_config_name }}.conf'
+        owner: root
+        group: root
+        mode: 0600
+        seuser: system_u
+        serole: object_r
+        setype: etc_t
+        selevel: s0
+      notify:
+        - restart snmp
+        - enabled snmp
+
+    - name: 'linux : started snmp'
+      become: true
+      service:
+        name: '{{ snmp_service_name }}'
+        state: started
+
+  when: check_snmp.changed
+  tags:
+    - configuration
