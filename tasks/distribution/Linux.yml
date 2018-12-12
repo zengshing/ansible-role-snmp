@@ -1,10 +1,15 @@
 ---
 # tasks file for sbaerlocher.snmp
 
+- name: Check if SNMP is already installed.
+  stat: path=/etc/init.d/"{{ snmp_daemon }}"
+  register: snmp_installed
+
 - name: 'linux : install snmp'
   become: true
   package:
     name: '{{ snmp_package_name }}'
+  when: snmp_installed.stat.exists == false
   tags:
     - packages
 
