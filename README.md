@@ -86,3 +86,4 @@ This project is under the MIT License. See the [LICENSE](https://sbaerlo.ch/lice
 
 (c) 2018, Simon Bärlocher
 # ansible-role-snmp
+# ansible-role-ssh
